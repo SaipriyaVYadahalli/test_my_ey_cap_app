@@ -25,7 +25,7 @@ context master {
     entity address {
         key NODE_KEY        : common.Guid;
             CITY            : String(44);
-            POSTAL_CODE     : String(7);
+            POSTAL_CODE     : String(40);
             STREET          : String(44);
             BUILDING        : String(127);
             COUNTRY         : String(44) @title: '{i18n>COUNTRY}';
@@ -70,7 +70,7 @@ context master {
         Currency      : Currency;
         salaryAmount  : common.AmountT;
         accountNumber : String(16);
-        bankId        : String(7);
+        bankId        : String(40);
         bankName      : String(64);
     }
 }
