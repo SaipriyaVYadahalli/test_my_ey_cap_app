@@ -11,6 +11,24 @@ build-parameters:
         - npm ci
         - npx cds build --production
 modules:
+  - name: mycapapp-ui
+    type: nodejs
+    path: app
+    parameters:
+      instances: 1
+      buildpack: nodejs_buildpack
+    build-parameters:
+      builder: npm-ci
+    requires:
+      - name: mycapapp-auth
+      - name: srv-api
+        group: destinations
+        properties:
+          name: srv-api
+          strictSSL: true
+          forwardAuthToken: true
+          url: "~{srv-url}"
+
   - name: mycapapp-srv
     type: nodejs
     path: gen/srv
@@ -24,8 +42,8 @@ modules:
         properties:
           srv-url: ${default-url}
     requires:
-      - name: mycapapp-auth
       - name: mycapapp-db
+      - name: mycapapp-auth
 
   - name: mycapapp-db-deployer
     type: hdb
@@ -36,6 +54,11 @@ modules:
       - name: mycapapp-db
 
 resources:
+  - name: mycapapp-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
   - name: mycapapp-auth
     type: org.cloudfoundry.managed-service
     parameters:
@@ -45,21 +68,3 @@ resources:
       config:
         xsappname: mycapapp-${org}-${space}
         tenant-mode: dedicated
-        role-collections:
-          - name: 'Viewer (mycapapp ${org}-${space})'
-            description: 'generated'
-            role-template-references:
-              - '$XSAPPNAME.Viewer'
-          - name: 'Admin (mycapapp ${org}-${space})'
-            description: 'generated'
-            role-template-references:
-              - '$XSAPPNAME.Admin'
-          - name: 'userattributes (mycapapp ${org}-${space})'
-            description: 'generated'
-            role-template-references:
-              - '$XSAPPNAME.userattributes'
-  - name: mycapapp-db
-    type: com.sap.xs.hdi-container
-    parameters:
-      service: hana
-      service-plan: hdi-shared
